@@ -5,22 +5,35 @@ use std::{
 };
 
 fn main() -> io::Result<()> {
-    let width = 1000 + 2;
-    let iters = 1000;
-    let mut grid = vec![false; width];
+    // Parse args
+    let mut args = std::env::args().skip(1);
+    let rule: u8 = args
+        .next()
+        .unwrap_or("30".into())
+        .parse()
+        .expect("Rule must be integer");
+    let width: usize = args
+        .next()
+        .unwrap_or("1000".into())
+        .parse()
+        .expect("Width must be integer");
+    let height: usize = args
+        .next()
+        .unwrap_or("1000".into())
+        .parse()
+        .expect("Height must be integer");
+    let output_path: String = args.next().unwrap_or("out.pbm".into());
 
-    // Setup
+    // Setup grid
+    let mut grid = vec![false; width];
     grid[width / 2] = true;
 
-    // Rule
-    let rule = 30;
-
     // Simulate
-    let image = sim(grid, iters, rule);
+    let image = sim(grid, height, rule);
 
     // Write image
     //let image = pack_bools(&image);
-    write_pbm("out.pbm", width, iters, &image)
+    write_pbm(output_path, width, height, &image)
 }
 
 fn sim(mut grid: Vec<bool>, iters: usize, rule: u8) -> Vec<bool> {
